@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\ECE121\LabInterface\mainInterface.py", line 149, in <module>
+    gui = mainInterface()
+  File "C:\ECE121\LabInterface\mainInterface.py", line 92, in __init__
+    self.mainWindow = mainWidget(self.portInstance)
+  File "C:\ECE121\LabInterface\mainInterface.py", line 46, in __init__
+    self.lab2Tabs.addTab(guiWidgets.RotaryEncoder.RotaryEncoder(self.portInstance),
+AttributeError: 'mainWidget' object has no attribute 'lab2Tabs'
