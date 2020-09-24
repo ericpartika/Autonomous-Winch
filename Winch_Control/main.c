@@ -18,6 +18,8 @@
 
 #define DELTA 50
 
+#define ADSK LATDbits.LATD11
+
 #define MAIN
 #ifdef MAIN
 
@@ -37,12 +39,24 @@ int main(void) {
     NOP_delay_5ms();
     unsigned int tPlus = 0;
     unsigned int tMinus = 0;
+    unsigned int tPlusu = 0;
+    unsigned int tMinusu = 0;
     static int r;
     static int u;
     static int distance;
     static int current;
+    static uint8_t currentDOUT, lastDOUT;  
     TRISFbits.TRISF2 = 0;
     LATFbits.LATF2 = 1;
+    //for hx711
+    //set pin 34 to input
+    TRISDbits.TRISD5 = 1;
+    //set pin 35 to output for clock
+    TRISDbits.TRISD11 = 0;
+    LATDbits.LATD11 = 0;
+    //reading for hx711
+    int reading = 0;
+    
     static int counter;
     FeedbackControl_SetProportionalGain(50000);
     FeedbackControl_SetIntegralGain(25);
@@ -51,7 +65,7 @@ int main(void) {
 
     while (1) {
         tPlus = FreeRunningTimer_GetMilliSeconds();
-
+        tPlusu = FreeRunningTimer_GetMicroSeconds();
 
         if (Protocol_IsMessageAvailable()) {
             if (Protocol_ReadNextID() == ID_COMMAND_OPEN_MOTOR_SPEED) {
@@ -107,16 +121,40 @@ int main(void) {
             }
         }
 
+        //hx711 stuff
+        if ((tPlusu - tMinusu) >= 0) {
+            tMinusu = tPlusu;
+            
+            currentDOUT = PORTDbits.RD5;
+
+            if (currentDOUT == 0 && lastDOUT == 1) {
+                reading = 0;
+                int i = 0;
+                for(i=0; i<24;i++){
+                    ADSK = 1;
+                    reading = reading<<1;
+                    ADSK = 0;
+                    if(PORTDbits.RD5) reading++;
+                }
+                ADSK = 1;
+                reading = reading^0x8000;
+                ADSK = 0;
+                int hold = Protocol_IntEndednessConversion(reading);
+                Protocol_SendMessage(4, ID_SERVO_RESPONSE, &hold);
+            }
+
+            lastDOUT = currentDOUT;
+        }
 
         if ((tPlus - tMinus) >= 10) {
             tMinus = tPlus;
             counter++;
-            
+
             int pos = RotaryEncoder_getRate();
-            current = Accumulated_angle(pos);
+            current = -1 * Accumulated_angle(pos);
             int hold = Protocol_IntEndednessConversion(current);
             Protocol_SendMessage(4, ID_REPORT_RATE, &hold);
-            u = FeedbackControl_Update(distance, -1*current);
+            u = FeedbackControl_Update(distance, 1 * current);
             u = ((int64_t) u * 1000) >> FEEDBACK_MAXOUTPUT_POWER;
             DCMotorDrive_SetMotorSpeed(u);
 

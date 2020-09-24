@@ -89,6 +89,7 @@ class DCMotorControl(QWidget):
 		sectionLabel.setFont(currentFont)
 		self.usedLayout.addWidget(sectionLabel)
 
+
 		compression = QHBoxLayout()
 		self.usedLayout.addLayout(compression)
 		compression.addWidget(QLabel("Depth:"))
@@ -105,7 +106,15 @@ class DCMotorControl(QWidget):
 		compression.addWidget(self.averateRate)
 		compression.addStretch()
 
+		compression = QHBoxLayout()
+		self.usedLayout.addLayout(compression)
+		compression.addWidget(QLabel("Tension:"))
+		self.tensionValue = QLabel("N/A")
+		compression.addWidget(self.tensionValue)
+		compression.addStretch()
+
 		self.portInstance.registerMessageHandler(Protocol.MessageIDs.ID_REPORT_RATE, self.rateChange)
+		self.portInstance.registerMessageHandler(Protocol.MessageIDs.ID_SERVO_RESPONSE, self.tensionChange)
 
 		self.usedLayout.addStretch()
 		return
@@ -141,4 +150,19 @@ class DCMotorControl(QWidget):
 
 	def speedByChange(self, change):
 		self.sliderChanged(change, True)
+		return
+
+	def tensionChange(self, newBytes):
+		# print(newBytes)
+		payload = newBytes[1:]
+		newTen = struct.unpack("!i", payload)[0]
+		#self.rateHistory.append(newRate)
+		#if len(self.rateHistory) > 20:
+		#	self.rateHistory.pop(0)
+		#mean = int(sum(self.rateHistory) / len(self.rateHistory))
+		if abs(newTen/10000) > 1000:
+			self.tensionValue.setText(str(0))
+		else:
+			self.tensionValue.setText(str(newTen/10000))
+		#self.averateRate.setText(str(mean / 10000))
 		return

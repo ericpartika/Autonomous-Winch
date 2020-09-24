@@ -2,6 +2,12 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/ericp/Documents/Winch/Winch_Control/LoadCell.h</file>
+            <file>file:/C:/Users/ericp/Documents/Winch/Winch_Control/Protocol.h</file>
+            <file>file:/C:/Users/ericp/Documents/Winch/Winch_Control/main.c</file>
+            <file>file:/C:/Users/ericp/Documents/Winch/Winch_Control/protocol.c</file>
+            <file>file:/C:/Users/ericp/Documents/Winch/Winch_Control/LoadCell.c</file>
+        </group>
     </open-files>
 </project-private>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <project>                                  
-  <executable name="dist/default/production/Winch_Control.production.elf">                 
+  <executable name="dist/default/debug/Winch_Control.debug.elf">                 
     <memory name="program">                 
       <units>bytes</units>                 
       <length>138752</length>                 
-      <used>24668</used>                     
-      <free>114084</free>                     
+      <used>16556</used>                     
+      <free>122196</free>                     
     </memory>                              
     <memory name="data">              
       <units>bytes</units>                 
-      <length>16384</length>                 
-      <used>2608</used>                     
-      <free>13776</free>                     
+      <length>16896</length>                 
+      <used>3256</used>                     
+      <free>13640</free>                     
     </memory>                              
   </executable>                            
 </project>                                 

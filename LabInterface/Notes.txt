@@ -1,0 +1,7 @@
+To Do
+
+-play with PID to get motor to retract payload
+
+-change gain on tension sensor
+
+-use tension sensor reading in open loop on motor
