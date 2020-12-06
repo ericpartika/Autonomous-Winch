@@ -138,6 +138,7 @@ int DCMotorDrive_SetMotorSpeed(int newMotorSpeed) {
         LATEbits.LATE1 = ~IN;
     }else {
         IN = 0;
+        newMotorSpeed *= .5;
         LATEbits.LATE0 = IN;
         LATEbits.LATE1 = ~IN;
     }

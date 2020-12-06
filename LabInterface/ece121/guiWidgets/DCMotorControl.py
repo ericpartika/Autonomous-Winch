@@ -139,7 +139,7 @@ class DCMotorControl(QWidget):
 			if abs(newValue - self.CurrentMotorSpeed) > 50 or overWrite is True:
 				self.SpeedDisplay.setSliderPosition(newValue)
 				# print(newValue)
-				self.CurrentMotorSpeed = newValue
+				self.CurrentMotorSpeed = newValue 
 				self.PWMValue.setText(str(self.CurrentMotorSpeed//100))
 				# message = Protocol.MessageIDs.ID_COMMAND_OPEN_MOTOR_SPEED.value.to_bytes(1, byteorder='big')
 				# message += self.CurrentMotorSpeed.to_bytes(4,byteorder='little', signed=True)

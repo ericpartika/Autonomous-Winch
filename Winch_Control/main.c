@@ -43,9 +43,9 @@ int main(void) {
     unsigned int tMinusu = 0;
     static int r;
     static int u;
-    static int distance;
+    static uint32_t distance;
     static int current;
-    static uint8_t currentDOUT, lastDOUT;  
+    static uint8_t currentDOUT, lastDOUT;
     TRISFbits.TRISF2 = 0;
     LATFbits.LATF2 = 1;
     //for hx711
@@ -56,7 +56,7 @@ int main(void) {
     LATDbits.LATD11 = 0;
     //reading for hx711
     int reading = 0;
-    
+
     static int counter;
     FeedbackControl_SetProportionalGain(50000);
     FeedbackControl_SetIntegralGain(25);
@@ -76,39 +76,9 @@ int main(void) {
                 motor |= (data[3] << 8) & 0x0000FF00;
                 motor |= (data[4]) & 0x000000FF;
                 distance = motor * 100;
-                //DCMotorDrive_SetMotorSpeed(motor);
-                motor = Protocol_IntEndednessConversion(motor);
+                DCMotorDrive_SetMotorSpeed(motor);
+                //motor = Protocol_IntEndednessConversion(motor);
                 Protocol_SendMessage(4, ID_COMMAND_OPEN_MOTOR_SPEED_RESP, &motor);
-            }
-            if (Protocol_ReadNextID() == ID_FEEDBACK_SET_GAINS) {
-                char data[MAXPAYLOADLENGTH];
-                Protocol_GetPayload(data);
-                int P = (data[1] << 24) & 0xFF000000;
-                P |= (data[2] << 16) & 0x00FF0000;
-                P |= (data[3] << 8) & 0x0000FF00;
-                P |= (data[4]) & 0x000000FF;
-                FeedbackControl_SetProportionalGain(P);
-
-                int I = (data[5] << 24) & 0xFF000000;
-                I |= (data[6] << 16) & 0x00FF0000;
-                I |= (data[7] << 8) & 0x0000FF00;
-                I |= (data[8]) & 0x000000FF;
-                FeedbackControl_SetIntegralGain(I);
-
-                int D = (data[9] << 24) & 0xFF000000;
-                D |= (data[10] << 16) & 0x00FF0000;
-                D |= (data[11] << 8) & 0x0000FF00;
-                D |= (data[12]) & 0x000000FF;
-                FeedbackControl_SetDerivativeGain(D);
-
-                Protocol_SendMessage(0, ID_FEEDBACK_SET_GAINS_RESP, NULL);
-
-            }
-            if (Protocol_ReadNextID() == ID_FEEDBACK_RESET_CONTROLLER) {
-                char data[MAXPAYLOADLENGTH];
-                Protocol_GetPayload(data);
-                FeedbackControl_ResetController();
-                Protocol_SendMessage(0, ID_FEEDBACK_RESET_CONTROLLER_RESP, NULL);
             }
             if (Protocol_ReadNextID() == ID_COMMANDED_RATE) {
                 char data[MAXPAYLOADLENGTH];
@@ -124,17 +94,17 @@ int main(void) {
         //hx711 stuff
         if ((tPlusu - tMinusu) >= 0) {
             tMinusu = tPlusu;
-            
+
             currentDOUT = PORTDbits.RD5;
 
             if (currentDOUT == 0 && lastDOUT == 1) {
                 reading = 0;
                 int i = 0;
-                for(i=0; i<24;i++){
+                for (i = 0; i < 24; i++) {
                     ADSK = 1;
-                    reading = reading<<1;
+                    reading = reading << 1;
                     ADSK = 0;
-                    if(PORTDbits.RD5) reading++;
+                    if (PORTDbits.RD5) reading++;
                 }
                 ADSK = 1;
                 reading = reading^0x8000;
@@ -151,11 +121,20 @@ int main(void) {
             counter++;
 
             int pos = RotaryEncoder_getRate();
-            current = -1 * Accumulated_angle(pos);
+            current = Accumulated_angle(-pos)/3;
+            //current = Accumulated_angle(pos)*(-3);
             int hold = Protocol_IntEndednessConversion(current);
             Protocol_SendMessage(4, ID_REPORT_RATE, &hold);
             u = FeedbackControl_Update(distance, 1 * current);
             u = ((int64_t) u * 1000) >> FEEDBACK_MAXOUTPUT_POWER;
+/*
+            if ((reading/10000) < 5) {
+                DCMotorDrive_SetMotorSpeed(-600);
+            } else if ((reading/10000) > 50) {
+                DCMotorDrive_SetMotorSpeed(600);
+            } else {
+                DCMotorDrive_SetMotorSpeed(u);
+            }*/
             DCMotorDrive_SetMotorSpeed(u);
 
         }
