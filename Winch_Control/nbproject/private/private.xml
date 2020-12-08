@@ -3,13 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Tika/Desktop/Autonomous-Winch/Winch_Control/NonVolatileMemory.c</file>
-            <file>file:/C:/Users/Tika/Desktop/Autonomous-Winch/Winch_Control/RotaryEncoder.c</file>
-            <file>file:/C:/Users/Tika/Desktop/Autonomous-Winch/Winch_Control/FeedbackControl.c</file>
-            <file>file:/C:/Users/Tika/Desktop/Autonomous-Winch/Winch_Control/MessageIDs.h</file>
-            <file>file:/C:/Users/Tika/Desktop/Autonomous-Winch/Winch_Control/DCMotorDrive.c</file>
-            <file>file:/C:/Users/Tika/Desktop/Autonomous-Winch/Winch_Control/main.c</file>
-            <file>file:/C:/Users/Tika/Desktop/Autonomous-Winch/Winch_Control/protocol.c</file>
+            <file>file:/C:/Users/ericp/Documents/Winch/Autonomous-Winch/Winch_Control/main.c</file>
+            <file>file:/C:/Users/ericp/Documents/Winch/Autonomous-Winch/Winch_Control/ADCFilter.c</file>
+            <file>file:/C:/Users/ericp/Documents/Winch/Autonomous-Winch/Winch_Control/protocol.c</file>
         </group>
     </open-files>
 </project-private>

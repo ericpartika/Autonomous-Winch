@@ -55,7 +55,8 @@ int main(void) {
     TRISDbits.TRISD11 = 0;
     LATDbits.LATD11 = 0;
     //reading for hx711
-    int reading = 0;
+    int reading[20];
+    int rindex = 0;
 
     static int counter;
     FeedbackControl_SetProportionalGain(50000);
@@ -98,19 +99,20 @@ int main(void) {
             currentDOUT = PORTDbits.RD5;
 
             if (currentDOUT == 0 && lastDOUT == 1) {
-                reading = 0;
+                reading[rindex] = 0;
                 int i = 0;
                 for (i = 0; i < 24; i++) {
                     ADSK = 1;
-                    reading = reading << 1;
+                    reading[rindex] = reading[rindex] << 1;
                     ADSK = 0;
-                    if (PORTDbits.RD5) reading++;
+                    if (PORTDbits.RD5) reading[rindex]++;
                 }
                 ADSK = 1;
-                reading = reading^0x8000;
+                reading[rindex] = reading[rindex]^0x8000;
                 ADSK = 0;
-                int hold = Protocol_IntEndednessConversion(reading);
+                int hold = Protocol_IntEndednessConversion(reading[rindex]);
                 Protocol_SendMessage(4, ID_SERVO_RESPONSE, &hold);
+                rindex = (rindex + 1)%20;
             }
 
             lastDOUT = currentDOUT;
@@ -126,15 +128,15 @@ int main(void) {
             int hold = Protocol_IntEndednessConversion(current);
             Protocol_SendMessage(4, ID_REPORT_RATE, &hold);
             int log[2];
-            log[0] = current/1000;
-            log[1] = reading/10000;
+            log[0] = current;
+            log[1] = reading[rindex];
             Protocol_SendMessage(8, ID_LOG_INT_TWO, &log);
             u = FeedbackControl_Update(distance, 1 * current);
             u = ((int64_t) u * 1000) >> FEEDBACK_MAXOUTPUT_POWER;
 
-            if ((reading/10000) < 20) {
+            if ((reading[rindex]/10000) < 20) {
                 DCMotorDrive_SetMotorSpeed(-600);
-            } else if ((reading/10000) > 50) {
+            } else if ((reading[rindex]/10000) > 50) {
                 DCMotorDrive_SetMotorSpeed(600);
             } else {
                 DCMotorDrive_SetMotorSpeed(u);
