@@ -59,7 +59,7 @@ int main(void) {
 
     static int counter;
     FeedbackControl_SetProportionalGain(50000);
-    FeedbackControl_SetIntegralGain(25);
+    FeedbackControl_SetIntegralGain(250);
     FeedbackControl_SetDerivativeGain(75000);
     current = RotaryEncoder_getRate();
 
@@ -125,17 +125,21 @@ int main(void) {
             //current = Accumulated_angle(pos)*(-3);
             int hold = Protocol_IntEndednessConversion(current);
             Protocol_SendMessage(4, ID_REPORT_RATE, &hold);
+            int log[2];
+            log[0] = current/1000;
+            log[1] = reading/10000;
+            Protocol_SendMessage(8, ID_LOG_INT_TWO, &log);
             u = FeedbackControl_Update(distance, 1 * current);
             u = ((int64_t) u * 1000) >> FEEDBACK_MAXOUTPUT_POWER;
-/*
-            if ((reading/10000) < 5) {
+
+            if ((reading/10000) < 20) {
                 DCMotorDrive_SetMotorSpeed(-600);
             } else if ((reading/10000) > 50) {
                 DCMotorDrive_SetMotorSpeed(600);
             } else {
                 DCMotorDrive_SetMotorSpeed(u);
-            }*/
-            DCMotorDrive_SetMotorSpeed(u);
+            }
+            //DCMotorDrive_SetMotorSpeed(u);
 
         }
 
