@@ -22,6 +22,7 @@
 
 #define MAIN
 #ifdef MAIN
+int avereading(int reading[]);
 
 int main(void) {
 
@@ -129,12 +130,12 @@ int main(void) {
             Protocol_SendMessage(4, ID_REPORT_RATE, &hold);
             int log[2];
             log[0] = current;
-            log[1] = reading[rindex];
+            log[1] = avereading(reading);
             Protocol_SendMessage(8, ID_LOG_INT_TWO, &log);
             u = FeedbackControl_Update(distance, 1 * current);
             u = ((int64_t) u * 1000) >> FEEDBACK_MAXOUTPUT_POWER;
 
-            if ((reading[rindex]/10000) < 20) {
+            if ((avereading(reading)/10000) < 20) {
                 DCMotorDrive_SetMotorSpeed(-600);
             } else if ((reading[rindex]/10000) > 50) {
                 DCMotorDrive_SetMotorSpeed(600);
@@ -147,6 +148,15 @@ int main(void) {
 
     }
 
+}
+
+int avereading(int reading[]){
+    long sum = 0;
+    int i;
+    for (i = 0; i < 20; i++){
+        sum += reading[i];
+    }
+    return (int)sum/20;
 }
 
 
